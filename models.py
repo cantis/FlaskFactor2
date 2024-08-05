@@ -1,5 +1,4 @@
 """Database Models."""
-
 from __future__ import annotations
 
 import os
@@ -35,21 +34,21 @@ def get_session() -> Generator[Session, None, None]:
             raise
 
 
-class CampaignPlayerLink(SQLModel, table=True):
-    """Link table between Campaign and Player."""
+# class CampaignPlayerLink(SQLModel, table=True):
+#     """Link table between Campaign and Player."""
 
-    campaign_id: int | None = Field(default=None, foreign_key='campaign.id', primary_key=True)
-    player_id: int | None = Field(default=None, foreign_key='player.id', primary_key=True)
+#     campaign_id: int | None = Field(default=None, foreign_key='campaign.id', primary_key=True)
+#     player_id: int | None = Field(default=None, foreign_key='player.id', primary_key=True)
 
 
-class Campaign(SQLModel, table=True):
-    """Campaign model."""
+# class Campaign(SQLModel, table=True):
+#     """Campaign model."""
 
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
-    players: list[Player] = Relationship(back_populates='campaigns', link_model=CampaignPlayerLink)
-    characters: list[Character] = Relationship(back_populates='campaign')
-    game_sessions: list[GameSession] = Relationship(back_populates='campaign')
+#     id: int | None = Field(default=None, primary_key=True)
+#     name: str
+#     players: list[Player] = Relationship(back_populates='campaigns', link_model=CampaignPlayerLink)
+#     characters: list[Character] = Relationship(back_populates='campaign')
+#     game_sessions: list[GameSession] = Relationship(back_populates='campaign')
 
 
 class Player(SQLModel, table=True):
@@ -59,62 +58,62 @@ class Player(SQLModel, table=True):
     email: str
     password: str
     name: str
-    characters: list[Character] = Relationship(back_populates='player')
-    campaigns: list[Campaign] = Relationship(back_populates='players', link_model=CampaignPlayerLink)
+#     characters: list[Character] = Relationship(back_populates='player')
+#     campaigns: list[Campaign] = Relationship(back_populates='players', link_model=CampaignPlayerLink)
 
 
-class ItemCategory(str, Enum):
-    """Item category enum."""
+# class ItemCategory(str, Enum):
+#     """Item category enum."""
 
-    weapon = 'Weapon'
-    armor = 'Armor'
-    potion = 'Potion'
-    other = 'Other'
-
-
-class Item(SQLModel, table=True):
-    """Item model."""
-
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
-    value: float
-    category: ItemCategory
-    session_id: int | None = Field(default=None, foreign_key='game_session.id')
-    game_session: GameSession = Relationship(back_populates='items')
-    notes: str | None = ''
+#     weapon = 'Weapon'
+#     armor = 'Armor'
+#     potion = 'Potion'
+#     other = 'Other'
 
 
-class Character(SQLModel, table=True):
-    """Character model."""
+# class Item(SQLModel, table=True):
+#     """Item model."""
 
-    id: int | None = Field(default=None, primary_key=True)
-    name: str
-    retired: bool = Field(default=False)
-    player_id: int | None = Field(default=None, foreign_key='player.id')
-    player: Player = Relationship(back_populates='characters')
-    campaign_id: int | None = Field(default=None, foreign_key='campaign.id')
-    campaign: Campaign = Relationship(back_populates='characters')
-    items: list[CharacterItem] = Relationship(back_populates='character')
-
-
-class CharacterItem(SQLModel, table=True):
-    """Link table between Character and Item."""
-
-    character_id: int | None = Field(default=None, foreign_key='character.id', primary_key=True)
-    item_id: int | None = Field(default=None, foreign_key='item.id', primary_key=True)
-    character: Character = Relationship(back_populates='items')
-    item: Item = Relationship()
+#     id: int | None = Field(default=None, primary_key=True)
+#     name: str
+#     value: float
+#     category: ItemCategory
+#     session_id: int | None = Field(default=None, foreign_key='game_session.id')
+#     game_session: GameSession = Relationship(back_populates='items')
+#     notes: str | None = ''
 
 
-class GameSession(SQLModel, table=True):
-    """Game Session model."""
+# class Character(SQLModel, table=True):
+#     """Character model."""
 
-    id: int | None = Field(default=None, primary_key=True)
-    session_number: int
-    session_date: date
-    campaign_id: int | None = Field(default=None, foreign_key='campaign.id')
-    campaign: Campaign = Relationship(back_populates='game_sessions')
-    items: list[Item] = Relationship(back_populates='game_session')
+#     id: int | None = Field(default=None, primary_key=True)
+#     name: str
+#     retired: bool = Field(default=False)
+#     player_id: int | None = Field(default=None, foreign_key='player.id')
+#     player: Player = Relationship(back_populates='characters')
+#     campaign_id: int | None = Field(default=None, foreign_key='campaign.id')
+#     campaign: Campaign = Relationship(back_populates='characters')
+#     items: list[CharacterItem] = Relationship(back_populates='character')
+
+
+# class CharacterItem(SQLModel, table=True):
+#     """Link table between Character and Item."""
+
+#     character_id: int | None = Field(default=None, foreign_key='character.id', primary_key=True)
+#     item_id: int | None = Field(default=None, foreign_key='item.id', primary_key=True)
+#     character: Character = Relationship(back_populates='items')
+#     item: Item = Relationship()
+
+
+# class GameSession(SQLModel, table=True):
+#     """Game Session model."""
+
+#     id: int | None = Field(default=None, primary_key=True)
+#     session_number: int
+#     session_date: date
+#     campaign_id: int | None = Field(default=None, foreign_key='campaign.id')
+#     campaign: Campaign = Relationship(back_populates='game_sessions')
+#     items: list[Item] = Relationship(back_populates='game_session')
 
 
 def seed_data() -> None:
