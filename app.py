@@ -6,8 +6,10 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from models import create_db_and_tables
+from routes import admin, characters, home, transactions
 
 load_dotenv('.env')
+
 
 def create_app() -> Flask:
     """Flask App factory."""
@@ -18,10 +20,13 @@ def create_app() -> Flask:
     create_db_and_tables()
 
     # Register blueprints...
-    from routes import home
-    app.register_blueprint(home.home_bp)
+    app.register_blueprint(home.home_bp, url_prefix='/')
+    app.register_blueprint(admin.admin_bp, url_prefix='/admin')
+    app.register_blueprint(characters.characters_bp, url_prefix='/characters')
+    app.register_blueprint(transactions.transactions_bp, url_prefix='/transactions')
 
     return app
+
 
 app = create_app()
 
