@@ -6,13 +6,13 @@ from dotenv import load_dotenv
 from flask import Flask
 
 from models import create_db_and_tables
-from web.routes.home import home_bp
+from routes import admin, characters, home, transactions
 
 load_dotenv('.env')
 
 
 def create_app() -> Flask:
-    """Create a Flask application."""
+    """Flask App factory."""
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
 
@@ -20,7 +20,10 @@ def create_app() -> Flask:
     create_db_and_tables()
 
     # Register blueprints...
-    app.register_blueprint(home_bp)
+    app.register_blueprint(home.home_bp, url_prefix='/')
+    app.register_blueprint(admin.admin_bp, url_prefix='/admin')
+    app.register_blueprint(characters.characters_bp, url_prefix='/characters')
+    app.register_blueprint(transactions.transactions_bp, url_prefix='/transactions')
 
     return app
 

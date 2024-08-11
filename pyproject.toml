@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "FlaskFactor2"
+name = "flask_factor_2"
 version = "0.1.0"
 description = ""
 authors = ["Evan Young <cantis@gmail.com>"]

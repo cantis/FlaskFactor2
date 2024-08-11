@@ -48,4 +48,5 @@ COPY . .
 EXPOSE 5000
 
 # Run the application.
-CMD gunicorn web.web_main:app --bind=0.0.0.0:5000
+# CMD gunicorn web.web_main:app --bind=0.0.0.0:5000
+CMD gunicorn app:app --bind=0.0.0.0:5000
