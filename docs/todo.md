@@ -1,8 +1,12 @@
 # Flask Factor 2
 
 ## Todo
-- [ ] Create DB Tables
-- [ ] users route add/edit/delete
+- [x] Create DB Tables
+- [ ] Add Bootstrap base template
+- [ ] Add Navbar
+- [ ] Add Footer
+- [ ] Users route add/edit/delete
+- [ ] User login
 - [ ] items route add/edit/delete
 - [ ] admin route settings
 
