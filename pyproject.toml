@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "flaskfactor2"
+name = "FlaskFactor2"
 version = "0.1.0"
 description = ""
 authors = ["Evan Young <cantis@gmail.com>"]
@@ -29,7 +29,7 @@ pythonpath = [".", "src", "web"]
 testpaths = ["tests"]
 
 [tool.ruff]
-line_length = 120
+line-length = 120
 
 [tool.ruff.lint.flake8-quotes]
 inline-quotes = "single"
