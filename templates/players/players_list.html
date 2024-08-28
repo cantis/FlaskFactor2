@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Players List{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>All Players</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Active</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in players %}
+                <tr>
+                    <td>{{ player.id }}</td>
+                    <td>{{ player.name }}</td>
+                    <td>{{ player.email }}</td>
+                    <td>{{ "Yes" if player.is_active else "No" }}</td>
+                    <td>
+                        <a href="{{ url_for('fetch_player', player_id=player.id) }}" class="btn btn-primary btn-sm">View</a>
+                        <a href="{{ url_for('modify_player', player_id=player.id) }}" class="btn btn-warning btn-sm">Edit</a>
+                        <a href="{{ url_for('remove_player', player_id=player.id) }}" class="btn btn-danger btn-sm">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Remove Player{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Remove Player</h1>
+        <p>Are you sure you want to remove player <strong>{{ player.name }}</strong>?</p>
+        <form method="post" action="{{ url_for('remove_player', player_id=player.id) }}">
+            <button type="submit" class="btn btn-danger">Yes, Remove</button>
+            <a href="{{ url_for('players_list') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+{% endblock %}

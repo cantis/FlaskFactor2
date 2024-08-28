@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Player Details{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1>Player Details</h1>
+        <p><strong>Name:</strong> {{ player.name }}</p>
+        <p><strong>Email:</strong> {{ player.email }}</p>
+        <p><strong>Active:</strong> {{ "Yes" if player.is_active else "No" }}</p>
+        <p><strong>Password Attempts:</strong> {{ player.password_attempts }}</p>
+        <p><strong>Reset Password:</strong> {{ "Yes" if player.reset_password else "No" }}</p>
+        <a href="{{ url_for('modify_player', player_id=player.id) }}" class="btn btn-warning">Edit</a>
+        <a href="{{ url_for('players_list') }}" class="btn btn-secondary">Back to List</a>
+    </div>
+{% endblock %}

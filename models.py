@@ -42,6 +42,9 @@ class Player(SQLModel, table=True):
     email: str
     password: str
     name: str
+    password_attempts: int = Field(default=0)
+    reset_password: bool = Field(default=False)
+    is_active: bool = Field(default=True)
 
 
 def seed_data() -> None:
