@@ -11,6 +11,8 @@ flask = "^3.0.3"
 gunicorn = "^22.0.0"
 sqlmodel = "^0.0.21"
 python-dotenv = "^1.0.1"
+flask-wtf = "^1.2.1"
+email-validator = "^2.2.0"
 
 
 [tool.poetry.group.dev.dependencies]

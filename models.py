@@ -13,7 +13,7 @@ from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
 if TYPE_CHECKING:
     from datetime import date
 
-DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///database.db'
+DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///flask_factor.db'
 engine = create_engine(url=DATABASE_URL, echo=True)
 
 

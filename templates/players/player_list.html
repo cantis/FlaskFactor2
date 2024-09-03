@@ -5,6 +5,7 @@
 {% block content %}
     <div class="container mt-5">
         <h1>All Players</h1>
+        <a href="{{ url_for('players.player_add_form') }}" class="btn btn-success mb-3">Add New Player</a>
         <table class="table table-striped">
             <thead>
                 <tr>
