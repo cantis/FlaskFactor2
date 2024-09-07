@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from webbrowser import get
-
 from sqlmodel import select
 
 from models import Player, get_session
@@ -54,6 +52,13 @@ def get_player(player_id) -> Player:
         return player
 
 
+def get_all_players() -> list[Player]:  # Modify the return type annotation
+    """Get all players."""
+    with get_session() as session:
+        players = session.exec(select(Player)).all()
+        return list(players)
+
+
 def update_player(player_id: int, update_data: dict) -> Player:
     """Update a player."""
     with get_session() as session:
@@ -78,10 +83,3 @@ def delete_player(player_id) -> None:
 
         session.delete(player)
         session.commit()
-
-
-def get_all_players() -> list[Player]:  # Modify the return type annotation
-    """Get all players."""
-    with get_session() as session:
-        players = session.exec(select(Player)).all()
-        return list(players)

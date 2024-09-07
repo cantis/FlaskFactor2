@@ -1,6 +1,6 @@
 """Player Routes."""
 
-from flask import Blueprint, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_wtf import FlaskForm
 from werkzeug import Response
 from wtforms import PasswordField, StringField
@@ -19,23 +19,30 @@ class AddPlayerForm(FlaskForm):
     password = PasswordField('Password')
 
 
+class UpdatePlayerForm(FlaskForm):
+    """Update player form."""
+
+    name = StringField('Name')
+    email = StringField('Email', validators=[Email('Invalid email')])
+    password = PasswordField('Password')
+
+
 @players_bp.route('/')
 def player_list() -> str:
     """List all players."""
     players = get_all_players()
     return render_template('players/player_list.html', players=players)
-    return render_template('players/player_list.html')
 
 
 @players_bp.route('/player_add', methods=['GET'])
-def player_add_form() -> str:
-    """Show the player add template."""
+def player_add_get() -> str:
+    """Show the player add html page."""
     return render_template('players/player_add.html', form=AddPlayerForm())
 
 
 @players_bp.route('/players', methods=['POST'])
-def add_player() -> Response:
-    """Add a player."""
+def player_add_post() -> Response:
+    """Process the player add form and back to the player list."""
     form = AddPlayerForm()
     if form.validate_on_submit():
         player_data = {
@@ -49,28 +56,37 @@ def add_player() -> Response:
 
 
 @players_bp.route('/players/<int:player_id>', methods=['GET'])
-def fetch_player(player_id) -> str:
-    """Fetch a player."""
+def player_update_get(player_id) -> str:
+    """Get a player for update."""
     player = get_player(player_id)
     if not player:
-        abort(404)
-    return jsonify({'id': player.id, 'name': player.name, 'level': player.level})
+        return abort(404, f'Player with id {player_id} not found')
+    return render_template('players/player_update.html', form=UpdatePlayerForm(data=player))
 
 
 @players_bp.route('/players/<int:player_id>', methods=['PUT'])
-def modify_player(player_id) -> str:
+def player_update_put(player_id) -> Response:
     """Modify a player."""
-    update_data = request.json
-    updated_player = update_player(player_id, update_data)
-    if not updated_player:
-        abort(404)
-    return jsonify({'id': updated_player.id, 'name': updated_player.name, 'level': updated_player.level})
+    form = UpdatePlayerForm()
+    if form.validate_on_submit():
+        update_data = {
+            'name': form.name.data,
+            'email': form.email.data,
+            'password': form.password.data,
+        }
+        updated_player = update_player(player_id, update_data)
+        if updated_player:
+            flash(f'Player {updated_player.name} updated successfully', 'success')
+        else:
+            abort(404)
+    return redirect(url_for('players.player_list'))
 
 
 @players_bp.route('/players/<int:player_id>', methods=['DELETE'])
-def remove_player(player_id) -> str:
+def player_delete(player_id) -> Response:
     """Remove a player."""
     player = delete_player(player_id)
     if not player:
-        abort(404)
-    return jsonify({'message': 'Player deleted'}), 200
+        abort(404, f'Player with id {player_id} not found')
+    flash(f'Player {player.name} deleted successfully', 'success')
+    return redirect(url_for('players.player_list'))

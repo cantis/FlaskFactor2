@@ -5,7 +5,7 @@
 {% block content %}
     <div class="container mt-5">
         <h1>Add New Player</h1>
-        <form method="post" action="{{url_for('players.add_player')}}">
+        <form method="post" action="{{url_for('players.player_add_post')}}">
             {{form.hidden_tag()}}
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
