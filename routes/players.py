@@ -26,7 +26,7 @@ class UpdatePlayerForm(FlaskForm):
     email = StringField('Email', validators=[Email('Invalid email')])
     password = PasswordField('Password')
 
-
+    
 @players_bp.route('/')
 def player_list() -> str:
     """List all players."""
