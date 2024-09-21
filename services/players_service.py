@@ -41,7 +41,6 @@ def validate_password(email: str, password: str) -> bool:
         player = session.exec(select(Player).where(Player.email == email)).first()
         if not player:
             return False
-
         return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))
 
 
@@ -64,12 +63,21 @@ def add_player(player_data) -> Player:
         return new_player
 
 
-def get_player(player_id) -> Player:
+def get_player_by_id(player_id) -> Player:
     """Get a player by id."""
     with get_session() as session:
         player = session.exec(select(Player).where(Player.id == player_id)).first()
         if not player:
             raise PlayerNotFoundError(player_id)
+        return player
+
+
+def get_player_by_email(email: str) -> Player:
+    """Get a player by email."""
+    with get_session() as session:
+        player = session.exec(select(Player).where(Player.email == email)).first()
+        if not player:
+            raise PlayerNotFoundError(email)
         return player
 
 

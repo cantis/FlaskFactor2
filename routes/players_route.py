@@ -6,7 +6,13 @@ from werkzeug import Response
 from wtforms import PasswordField, StringField
 from wtforms.validators import Email, InputRequired
 
-from services.players_service import add_player, delete_player, get_all_players, get_player, update_player
+from services.players_service import (
+    add_player,
+    delete_player,
+    get_all_players,
+    get_player_by_id,
+    update_player,
+)
 
 players_bp = Blueprint('players', __name__, template_folder='templates')
 
@@ -20,11 +26,12 @@ class AddPlayerForm(FlaskForm):
 
 
 class UpdatePlayerForm(FlaskForm):
-    """Update player form."""  
+    """Update player form."""
 
     name = StringField('Name')
     email = StringField('Email', validators=[Email('Invalid email')])
-    password = PasswordField('Password')
+    current_password = PasswordField('Current Password')
+    new_password = PasswordField('Password')
 
 
 @players_bp.route('/')
@@ -58,7 +65,7 @@ def player_add_post() -> Response:
 @players_bp.route('/players/<int:player_id>', methods=['GET'])
 def player_update_get(player_id) -> str:
     """Get a player for update."""
-    player = get_player(player_id)
+    player = get_player_by_id(player_id)
     if not player:
         return abort(404, f'Player with id {player_id} not found')
     return render_template('players/player_update.html', form=UpdatePlayerForm(data=player))

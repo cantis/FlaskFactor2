@@ -8,6 +8,7 @@ from enum import Enum
 from sqlite3 import DatabaseError
 from typing import TYPE_CHECKING, Generator
 
+from flask_login import UserMixin
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
 
 if TYPE_CHECKING:
@@ -35,7 +36,7 @@ def get_session() -> Generator[Session, None, None]:
             raise
 
 
-class Player(SQLModel, table=True):
+class Player(SQLModel, UserMixin, table=True):
     """Player model."""
 
     id: int | None = Field(default=None, primary_key=True)

@@ -1,17 +1,17 @@
 # Flask Factor 2
 
 ## Todo
-- [x] Create DB Tables
-- [ ] Add Bootstrap base template
-- [ ] Add Navbar
-- [ ] Add Footer
-- [ ] Users route add/edit/delete
+- [ ] Create DB Tables
+- [x] Add Bootstrap base template
+- [x] Add Navbar
+- [x] Add Footer
+- [x] Players route add/edit/delete
 - [ ] User login
 - [ ] items route add/edit/delete
 - [ ] admin route settings
 
 ### DB Tables
-- [ ] players
+- [x] players
 - [ ] sessions
 - [ ] items
 - [ ] item_categories
@@ -24,12 +24,12 @@
 - [ ] character_campaigns
 
 
-Summary:
-Install and Initialize flask-login.
-Update the Player Model to include UserMixin.
-Define a User Loader Callback.
-Create Login Form using FlaskForm.
-Add Login and Logout Routes.
-Protect Routes with @login_required.
-Create Templates for login and other views.
+Summary: Plan for flask-login integration... from github copilot
+- [x] Install and Initialize flask-login.
+- [x] Update the Player Model to include UserMixin.
+- [x] Define a User Loader Callback.
+- [x] Create Login Form using FlaskForm.
+- [x] Add Login and Logout Routes.
+- [ ] Protect Routes with @login_required.
+- [ ] Create Templates for login and other views.
 By following these steps, you can integrate flask-login into your Flask application to handle user authentication, including login, logout, and protecting routes.
