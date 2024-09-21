@@ -1,12 +1,13 @@
 """Start point of the application."""
-
 import os
+import traceback
 
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
+from flask_login import LoginManager
 
 from models import create_db_and_tables
-from routes import admin, characters, home, players, transactions
+from routes import admin_route, characters_route, home_route, players_route, transactions_route
 
 load_dotenv('.env')
 
@@ -16,20 +17,32 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
 
+    # Setup login manager
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'players.login'
+
+
     # Create DB and tables
     create_db_and_tables()
 
     # Register blueprints...
-    app.register_blueprint(home.home_bp, url_prefix='/')
-    app.register_blueprint(admin.admin_bp, url_prefix='/admin')
-    app.register_blueprint(characters.characters_bp, url_prefix='/characters')
-    app.register_blueprint(transactions.transactions_bp, url_prefix='/transactions')
-    app.register_blueprint(players.players_bp, url_prefix='/players')
+    app.register_blueprint(home_route.home_bp, url_prefix='/')
+    app.register_blueprint(admin_route.admin_bp, url_prefix='/admin')
+    app.register_blueprint(characters_route.characters_bp, url_prefix='/characters')
+    app.register_blueprint(transactions_route.transactions_bp, url_prefix='/transactions')
+    app.register_blueprint(players_route.players_bp, url_prefix='/players')
 
     return app
 
 
 app = create_app()
+
+@app.errorhandler(Exception)
+def handle_exception(error: Exception) -> str:
+    """Handle all exceptions."""
+    trace = traceback.format_exc() if app.debug else None
+    return render_template('error.html', error=error, trace=trace)
 
 if __name__ == '__main__':
     """Run the application."""

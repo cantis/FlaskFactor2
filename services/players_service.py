@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
+import bcrypt
 from sqlmodel import select
 
 from models import Player, get_session
 
 
 class PlayerNotFoundError(Exception):
-    """Custom exception for player not found."""
+    """Custom exception for player_id not found."""
 
     def __init__(self, player_id) -> None:
         """Initialize the exception."""
         self.player_id = player_id
-        self.message = f'Player with id {player_id} not found'
+        self.message = f'Player with id {player_id} not found!'
         super().__init__(self.message)
 
 
@@ -23,8 +24,25 @@ class PlayerAlreadyExistsError(Exception):
     def __init__(self, email) -> None:
         """Initialize the exception."""
         self.email = email
-        self.message = f'Player with email {email} already exists'
+        self.message = f'Player with email {email} already exists!'
         super().__init__(self.message)
+
+
+def hash_password(password: str) -> str:
+    """Hash the password using bcrypt."""
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
+    return hashed_password.decode('utf-8')
+
+
+def validate_password(email: str, password: str) -> bool:
+    """Validate a user's password."""
+    with get_session() as session:
+        player = session.exec(select(Player).where(Player.email == email)).first()
+        if not player:
+            return False
+
+        return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))
 
 
 def add_player(player_data) -> Player:
@@ -35,8 +53,11 @@ def add_player(player_data) -> Player:
         if player:
             raise PlayerAlreadyExistsError(player_data['email'])
 
+        # hash the password
+        hashed_password = hash_password(player_data['password'])
+
         # create new player
-        new_player = Player(name=player_data['name'], email=player_data['email'], password=player_data['password'])
+        new_player = Player(name=player_data['name'], email=player_data['email'], password=hashed_password)
         session.add(new_player)
         session.commit()
         session.refresh(new_player)  # Refresh the instance to get the updated data

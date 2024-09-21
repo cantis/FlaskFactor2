@@ -20,13 +20,13 @@ class AddPlayerForm(FlaskForm):
 
 
 class UpdatePlayerForm(FlaskForm):
-    """Update player form."""
+    """Update player form."""  
 
     name = StringField('Name')
     email = StringField('Email', validators=[Email('Invalid email')])
     password = PasswordField('Password')
 
-    
+
 @players_bp.route('/')
 def player_list() -> str:
     """List all players."""
