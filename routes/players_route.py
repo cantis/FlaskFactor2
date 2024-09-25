@@ -35,7 +35,7 @@ class UpdatePlayerForm(FlaskForm):
 
 
 @players_bp.route('/')
-def player_list() -> str:
+def players_list() -> str:
     """List all players."""
     players = get_all_players()
     return render_template('players/player_list.html', players=players)

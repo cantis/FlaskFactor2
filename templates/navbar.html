@@ -12,7 +12,7 @@
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="adminDropdown">
                         <!-- <li><a class="dropdown-item" href="{{ url_for('admin.index') }}">Admin</a></li> -->
-                        <li><a class="dropdown-item" href="{{ url_for('players.player_list') }}">Players</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('players.players_list') }}">Players</a></li>
                     </ul>
                 </li>
                 <li class="nav-item">
@@ -26,7 +26,8 @@
                 {% if current_user %}
                     Logged in as: {{ current_user }} | Company: {{ current_company }}
                 {% else %}
-                    <a class="nav-link" href="{{ url_for('players.player_add_get') }}">Register as Player</a>
+                    <a class="nav-link d-inline" href="{{ url_for('home.login_get') }}">Login</a> |
+                    <a class="nav-link d-inline" href="{{ url_for('players.player_add_get') }}">Register</a>
                 {% endif %}
             </span>
         </div>
