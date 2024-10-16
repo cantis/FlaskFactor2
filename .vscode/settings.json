@@ -3,5 +3,11 @@
     "python.analysis.typeCheckingMode": "basic",
     "python.analysis.extraPaths": [
         "./services"
+    ],
+    "github.copilot.chat.experimental.codeGeneration.instructions": [
+        {
+
+            "file": ".vscode/copilot-instructions.md"
+        }
     ]
 }

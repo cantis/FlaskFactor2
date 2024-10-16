@@ -1,0 +1,14 @@
+For Python Based Projects
+- Prefer single quotes over double quotes except on multi-line strings and docstrings.
+- Prefer powershell for scripts where necessary.
+- For tests use pytest.
+- For tests use the arrange, act, assert pattern with comments.
+- For documentation use markdown.
+- Generate docstrings for all functions and classes and at the top of all code files.
+- I prefer my code to be in the src directory.
+- I prefer my tests to be in the tests directory.
+- I prefer my scripts to be in the scripts directory.
+- I prefer my documentation to be in the docs directory.
+- My Package manager is UV, I use it for package management and virtual environments.
+- I prefer my virtual environments to be in the .venv directory.
+- I export my list of dependencies to a requirements.txt file.
