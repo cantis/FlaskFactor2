@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import os
 from contextlib import contextmanager
-from enum import Enum
 from sqlite3 import DatabaseError
 from typing import TYPE_CHECKING, Generator
 
@@ -32,6 +31,9 @@ def get_session() -> Generator[Session, None, None]:
             session.commit()
         except DatabaseError as e:
             e.add_note('An error occurred with the database')
+            session.rollback()
+            raise
+        except Exception as e:
             session.rollback()
             raise
 

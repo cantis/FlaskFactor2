@@ -43,11 +43,30 @@ def login_post() -> Response:
         email = form.email.data
         password = form.password.data
         remember = bool(form.remember.data) if form.remember.data else False
-        if validate_password(email, password):
+
+        try:
             player = get_player_by_email(email)
+            if not player:
+                raise Exception('Player not found', 404)
+            if not validate_password(email, password):
+                raise Exception('Invalid password', 401)
             flask_login.login_user(player, remember=remember)
             flash(f'Player {player.name} logged in successfully', 'success')
             return redirect(url_for('players.players_list'), code=200)
+        except Exception as e:
+            flash(f'An error occurred: {str(e)}', 'danger')
+            return redirect(url_for('home.login_get'), code=500)
+
+
+        # if validate_password(email, password):
+        #     try:
+        #         player = get_player_by_email(email)
+        #         flask_login.login_user(player, remember=remember)
+        #         flash(f'Player {player.name} logged in successfully', 'success')
+        #         return redirect(url_for('players.players_list'), code=200)
+        #     except Exception as e:
+        #         flash(f'An error occurred: {str(e)}', 'danger')
+        #         return redirect(url_for('home.login_get'), code=500)
     flash('Invalid email or password', 'danger')
     return redirect(url_for('home.login_get'), code=401)
 
