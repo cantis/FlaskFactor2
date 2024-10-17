@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import os
 from contextlib import contextmanager
 from sqlite3 import DatabaseError
@@ -9,6 +10,8 @@ from typing import TYPE_CHECKING, Generator
 
 from flask_login import UserMixin
 from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from datetime import date
@@ -20,6 +23,7 @@ engine = create_engine(url=DATABASE_URL, echo=True)
 def create_db_and_tables() -> None:
     """Create database and tables."""
     SQLModel.metadata.create_all(engine)
+    logger.info('Database and tables created')
 
 
 @contextmanager
@@ -31,10 +35,15 @@ def get_session() -> Generator[Session, None, None]:
             session.commit()
         except DatabaseError as e:
             e.add_note('An error occurred with the database')
-            session.rollback()
+            logging.exception('Database error occurred %s')
+            if session:
+                session.rollback()
             raise
         except Exception as e:
-            session.rollback()
+            logging.exception('General error occurred %s')
+            if session:
+                session.rollback()
+            e.add_note('General error occurred')
             raise
 
 

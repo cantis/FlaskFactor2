@@ -1,5 +1,6 @@
-"""Start point of the application."""
+"""Start point of the application, flask app factory."""
 
+import logging
 import os
 import traceback
 
@@ -18,6 +19,11 @@ def create_app() -> Flask:
     """Flask App factory."""
     app = Flask(__name__)
     app.secret_key = os.getenv('SECRET_KEY')
+
+    # Configure logging
+    logging.basicConfig(filename='flask_factor.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    logger.info('Application startup')
 
     # Create DB and tables
     create_db_and_tables()
