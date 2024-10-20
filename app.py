@@ -22,7 +22,12 @@ def create_app() -> Flask:
 
     # Configure logging
     logging.basicConfig(
-        filename='/flask_factor.log', level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler('flask_factor.log'),
+            logging.StreamHandler(),
+        ],
     )
     logger = logging.getLogger(__name__)
     logger.info('Application startup')
