@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import bcrypt
+from sqlalchemy.orm import load_only
 from sqlmodel import select
 
 from models import Player, get_session

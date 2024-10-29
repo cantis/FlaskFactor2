@@ -29,22 +29,25 @@ def create_db_and_tables() -> None:
 @contextmanager
 def get_session() -> Generator[Session, None, None]:
     """Return a database session."""
-    with Session(engine) as session:
-        try:
-            yield session
-            session.commit()
-        except DatabaseError as e:
-            e.add_note('An error occurred with the database')
-            logging.exception('Database error occurred %s')
-            if session:
-                session.rollback()
-            raise
-        except Exception as e:
-            logging.exception('General error occurred %s')
-            if session:
-                session.rollback()
-            e.add_note('General error occurred')
-            raise
+    try:
+        session = Session(engine)
+        yield session
+        session.commit()
+    except DatabaseError as e:
+        e.add_note('An error occurred with the database')
+        logging.exception('Database error occurred %s')
+        if session:
+            session.rollback()
+        raise
+    except Exception as e:
+        logging.exception('General error occurred %s')
+        if session:
+            session.rollback()
+        e.add_note('General error occurred')
+        raise
+    finally:
+        if session:
+            session.close()
 
 
 class Player(SQLModel, UserMixin, table=True):

@@ -30,6 +30,9 @@ def test_create_db_and_tables() -> None:
 def test_get_session(mock_session: MagicMock) -> None:
     """Test get_session context manager."""
     # Arrange
+    mock_session.commit = MagicMock()
+    mock_session.rollback = MagicMock()
+
     with patch('models.Session', return_value=mock_session):
         # Act
         with get_session() as session:
