@@ -4,9 +4,8 @@
     "python.analysis.extraPaths": [
         "./services"
     ],
-    "github.copilot.chat.experimental.codeGeneration.instructions": [
+    "github.copilot.chat.codeGeneration.instructions": [
         {
-
             "file": ".vscode/copilot-instructions.md"
         }
     ]

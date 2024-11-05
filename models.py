@@ -9,7 +9,8 @@ from sqlite3 import DatabaseError
 from typing import TYPE_CHECKING, Generator
 
 from flask_login import UserMixin
-from sqlmodel import Field, Relationship, Session, SQLModel, create_engine
+from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlmodel import Field, Relationship, SQLModel, create_engine
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +19,7 @@ if TYPE_CHECKING:
 
 DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///flask_factor.db'
 engine = create_engine(url=DATABASE_URL, echo=True)
+Session = scoped_session(sessionmaker(bind=engine))
 
 
 def create_db_and_tables() -> None:
@@ -27,27 +29,24 @@ def create_db_and_tables() -> None:
 
 
 @contextmanager
-def get_session() -> Generator[Session, None, None]:
+def get_session() -> Generator:
     """Return a database session."""
     try:
-        session = Session(engine)
+        session = Session()
         yield session
-        session.commit()
     except DatabaseError as e:
         e.add_note('An error occurred with the database')
         logging.exception('Database error occurred %s')
-        if session:
-            session.rollback()
         raise
     except Exception as e:
         logging.exception('General error occurred %s')
-        if session:
-            session.rollback()
         e.add_note('General error occurred')
         raise
     finally:
         if session:
             session.close()
+
+
 
 
 class Player(SQLModel, UserMixin, table=True):
