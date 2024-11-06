@@ -47,8 +47,6 @@ def get_session() -> Generator:
             session.close()
 
 
-
-
 class Player(SQLModel, UserMixin, table=True):
     """Player model."""
 
