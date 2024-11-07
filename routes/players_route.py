@@ -1,11 +1,12 @@
 """Player Routes."""
 
-from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, url_for
 from flask_wtf import FlaskForm
 from werkzeug import Response
 from wtforms import PasswordField, StringField
 from wtforms.validators import Email, InputRequired
 
+from models import get_db_session
 from services.players_service import (
     add_player,
     delete_player,
@@ -37,7 +38,8 @@ class UpdatePlayerForm(FlaskForm):
 @players_bp.route('/')
 def players_list() -> str:
     """List all players."""
-    players = get_all_players()
+    session = get_db_session()
+    players = get_all_players(session)
     return render_template('players/player_list.html', players=players)
 
 
@@ -51,13 +53,14 @@ def player_add_get() -> str:
 def player_add_post() -> Response:
     """Process the player add form and back to the player list."""
     form = AddPlayerForm()
+    session = get_db_session()
     if form.validate_on_submit():
         player_data = {
             'name': form.name.data,
             'email': form.email.data,
             'password': form.password.data,
         }
-        new_player = add_player(player_data)
+        new_player = add_player(session, player_data)
         flash(f'Player {new_player.name} added successfully', 'success')
     return redirect(url_for('players.player_list'))
 

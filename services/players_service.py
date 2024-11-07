@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import bcrypt
-from sqlalchemy.orm import load_only
-from sqlmodel import select
 
-from models import Player, get_session
+
+from models import Player
 
 
 class PlayerNotFoundError(Exception):
@@ -36,80 +35,74 @@ def hash_password(password: str) -> str:
     return hashed_password.decode('utf-8')
 
 
-def validate_password(email: str, password: str) -> bool:
+def validate_password(session, email: str, password: str) -> bool:
     """Validate a user's password."""
-    with get_session() as session:
-        player = session.exec(select(Player).where(Player.email == email)).first()
-        if not player:
-            return False
-        return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))
+    player = session.exec(select(Player).where(Player.email == email)).first()
+    if not player:
+        return False
+    return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))
 
 
-def add_player(player_data) -> Player:
+def add_player(session, player_data) -> Player:
     """Create a new player."""
-    with get_session() as session:
-        # check if the player already exists
-        player = session.exec(select(Player).where(Player.email == player_data['email'])).first()
-        if player:
-            raise PlayerAlreadyExistsError(player_data['email'])
+    # check if the player already exists
+    player = session.exec(select(Player).where(Player.email == player_data['email'])).first()
+    if player:
+        raise PlayerAlreadyExistsError(player_data['email'])
 
-        # hash the password
-        hashed_password = hash_password(player_data['password'])
+    # hash the password
+    hashed_password = hash_password(player_data['password'])
 
-        # create new player
-        new_player = Player(name=player_data['name'], email=player_data['email'], password=hashed_password)
-        session.add(new_player)
-        session.commit()
-        session.refresh(new_player)  # Refresh the instance to get the updated data
-        return new_player
+    # create new player
+    new_player = Player(name=player_data['name'], email=player_data['email'], password=hashed_password)
+    session.add(new_player)
+    session.commit()
+    session.refresh(new_player)  # Refresh the instance to get the updated data
+    return new_player
 
 
-def get_player_by_id(player_id) -> Player:
+def get_player_by_id(session, player_id) -> Player:
     """Get a player by id."""
-    with get_session() as session:
-        player = session.exec(select(Player).where(Player.id == player_id)).first()
-        if not player:
-            raise PlayerNotFoundError(player_id)
-        return player
+    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    if not player:
+        raise PlayerNotFoundError(player_id)
+    return player
 
 
-def get_player_by_email(email: str) -> Player:
+def get_player_by_email(session, email: str) -> Player:
     """Get a player by email."""
-    with get_session() as session:
-        player = session.exec(select(Player).where(Player.email == email)).first()
-        if not player:
-            raise PlayerNotFoundError(email)
-        return player
+    # get the player by email
+    player = session.exec(select(Player).where(Player.email == email)).first()
+    if not player:
+        raise PlayerNotFoundError(email)
+    return player
 
 
-def get_all_players() -> list[Player]:  # Modify the return type annotation
+def get_all_players(session) -> list[Player]:  # Modify the return type annotation
     """Get all players."""
-    with get_session() as session:
-        players = session.exec(select(Player)).all()
-        return list(players)
+    players = session.query(Player).all()
+    return list(players)
 
 
-def update_player(player_id: int, update_data: dict) -> Player:
+def update_player(session, player_id: int, update_data: dict) -> Player:
     """Update a player."""
-    with get_session() as session:
-        player = session.exec(select(Player).where(Player.id == player_id)).first()
-        if not player:
-            raise PlayerNotFoundError(player_id)
+    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    if not player:
+        raise PlayerNotFoundError(player_id)
 
-        for key, value in update_data.items():
-            setattr(player, key, value)
+    for key, value in update_data.items():
+        setattr(player, key, value)
 
-        session.commit()
-        session.refresh(player)  # Refresh the instance to get the updated data
-        return player
+    session.commit()
+    session.refresh(player)  # Refresh the instance to get the updated data
+    return player
 
 
-def delete_player(player_id) -> None:
+def delete_player(session, player_id: int) -> None:
     """Delete a player by id."""
-    with get_session() as session:
-        player = session.exec(select(Player).where(Player.id == player_id)).first()
-        if not player:
-            raise PlayerNotFoundError(player_id)
+    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    if not player:
+        raise PlayerNotFoundError(player_id)
 
-        session.delete(player)
-        session.commit()
+    session.delete(player)
+    session.commit()

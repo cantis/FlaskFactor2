@@ -1,4 +1,4 @@
-"""Database Models."""
+'''Database Models.'''
 
 from __future__ import annotations
 
@@ -10,29 +10,28 @@ from typing import Generator
 
 from flask import g
 from flask_login import UserMixin
-from sqlalchemy import Column, Integer, String, Boolean, create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlmodel import Field, SQLModel, create_engine
 
 logger = logging.getLogger(__name__)
+
 
 DATABASE_URL = os.environ.get('DATABASE_URL') or 'sqlite:///flask_factor.db'
 engine = create_engine(url=DATABASE_URL, echo=True)
 Session = scoped_session(sessionmaker(bind=engine))
-Base = declarative_base()
 
 
 def create_db_and_tables() -> None:
-    """Create database and tables."""
-    Base.metadata.create_all(engine)
+    '''Create database and tables.'''
+    SQLModel.metadata.create_all(engine)
     logger.info('Database and tables created')
 
 
 @contextmanager
 def get_session() -> Generator:
-    """Return a database session."""
-    session = Session()
+    '''Return a database session.'''
     try:
+        session = Session()
         yield session
     except DatabaseError as e:
         e.add_note('An error occurred with the database')
@@ -47,27 +46,26 @@ def get_session() -> Generator:
             session.close()
 
 
-class Player(Base, UserMixin):
-    """Player model."""
+class Player(SQLModel, UserMixin, table=True):
+    '''Player model.'''
 
-    __tablename__ = 'players'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
-    name = Column(String, nullable=False)
-    password_attempts = Column(Integer, default=0)
-    reset_password = Column(Boolean, default=False)
-    is_active = Column(Boolean, default=True)
+    id: int | None = Field(default=None, primary_key=True)
+    email: str
+    password: str
+    name: str
+    password_attempts: int = Field(default=0)
+    reset_password: bool = Field(default=False)
+    is_active: bool = Field(default=True)
 
 
 def get_db_session() -> scoped_session:
-    """Get a scoped database session."""
+    '''Get a scoped database session.'''
     if 'db_session' not in g:
-        g.db_session = Session
+        g.db_session = scoped_session(Session)
     return g.db_session
 
 
 def shutdown_db_session(e=None) -> None:
-    """Remove the database session."""
+    '''Remove the database session.'''
     if 'db_session' in g:
         g.db_session.remove()
