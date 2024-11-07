@@ -53,13 +53,13 @@ def player_add_get() -> str:
 def player_add_post() -> Response:
     """Process the player add form and back to the player list."""
     form = AddPlayerForm()
-    session = get_db_session()
     if form.validate_on_submit():
         player_data = {
             'name': form.name.data,
             'email': form.email.data,
             'password': form.password.data,
         }
+        session = get_db_session()
         new_player = add_player(session, player_data)
         flash(f'Player {new_player.name} added successfully', 'success')
     return redirect(url_for('players.player_list'))
@@ -68,7 +68,8 @@ def player_add_post() -> Response:
 @players_bp.route('/players/<int:player_id>', methods=['GET'])
 def player_update_get(player_id) -> str:
     """Get a player for update."""
-    player = get_player_by_id(player_id)
+    session = get_db_session()
+    player = get_player_by_id(session, player_id)
     if not player:
         return abort(404, f'Player with id {player_id} not found')
     return render_template('players/player_update.html', form=UpdatePlayerForm(data=player))
@@ -84,7 +85,8 @@ def player_update_put(player_id) -> Response:
             'email': form.email.data,
             'password': form.password.data,
         }
-        updated_player = update_player(player_id, update_data)
+        session = get_db_session()
+        updated_player = update_player(session, player_id, update_data)
         if updated_player:
             flash(f'Player {updated_player.name} updated successfully', 'success')
         else:
@@ -95,7 +97,8 @@ def player_update_put(player_id) -> Response:
 @players_bp.route('/players/<int:player_id>', methods=['DELETE'])
 def player_delete(player_id) -> Response:
     """Remove a player."""
-    player = delete_player(player_id)
+    session = get_db_session()
+    player = delete_player(session, player_id)
     if not player:
         abort(404, f'Player with id {player_id} not found')
     flash(f'Player {player.name} deleted successfully', 'success')

@@ -4,31 +4,30 @@ from __future__ import annotations
 
 import bcrypt
 
-
 from models import Player
 
 
 class PlayerNotFoundError(Exception):
     """Custom exception for player_id not found."""
 
-    def __init__(self, player_id) -> None:
+    def __init__(self, player_id: int, message: str ) -> None:
         """Initialize the exception."""
         self.player_id = player_id
-        self.message = f'Player with id {player_id} not found!'
+        self.message = message or f'Player with id {player_id} not found!'
         super().__init__(self.message)
 
 
 class PlayerAlreadyExistsError(Exception):
     """Custom exception for player already exists."""
 
-    def __init__(self, email) -> None:
+    def __init__(self, email: str, message: str = None) -> None:
         """Initialize the exception."""
         self.email = email
-        self.message = f'Player with email {email} already exists!'
+        self.message = message or f'Player with email {email} already exists!'
         super().__init__(self.message)
 
 
-def hash_password(password: str) -> str:
+def _hash_password(password: str) -> str:
     """Hash the password using bcrypt."""
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), salt)
@@ -37,7 +36,7 @@ def hash_password(password: str) -> str:
 
 def validate_password(session, email: str, password: str) -> bool:
     """Validate a user's password."""
-    player = session.exec(select(Player).where(Player.email == email)).first()
+    player = session(Player).filter(Player.email == email).first()
     if not player:
         return False
     return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))
@@ -46,12 +45,12 @@ def validate_password(session, email: str, password: str) -> bool:
 def add_player(session, player_data) -> Player:
     """Create a new player."""
     # check if the player already exists
-    player = session.exec(select(Player).where(Player.email == player_data['email'])).first()
+    player = session(Player).filter(Player.email == player_data['email']).first()
     if player:
         raise PlayerAlreadyExistsError(player_data['email'])
 
     # hash the password
-    hashed_password = hash_password(player_data['password'])
+    hashed_password = _hash_password(player_data['password'])
 
     # create new player
     new_player = Player(name=player_data['name'], email=player_data['email'], password=hashed_password)
@@ -61,9 +60,9 @@ def add_player(session, player_data) -> Player:
     return new_player
 
 
-def get_player_by_id(session, player_id) -> Player:
+def get_player_by_id(session, player_id: int) -> Player:
     """Get a player by id."""
-    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    player = session(Player).filter(Player.id == player_id).first()
     if not player:
         raise PlayerNotFoundError(player_id)
     return player
@@ -72,9 +71,9 @@ def get_player_by_id(session, player_id) -> Player:
 def get_player_by_email(session, email: str) -> Player:
     """Get a player by email."""
     # get the player by email
-    player = session.exec(select(Player).where(Player.email == email)).first()
+    player = session(Player).filter(Player.email == email).first()
     if not player:
-        raise PlayerNotFoundError(email)
+        raise PlayerNotFoundError()
     return player
 
 
