@@ -4,9 +4,9 @@ from typing import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
-from sqlmodel import Session, SQLModel
+from sqlmodel import SQLModel
 
-from models import Player, create_db_and_tables, engine, get_session, seed_data
+from models import Player, create_db_and_tables, get_session
 
 
 @pytest.fixture()
@@ -45,7 +45,6 @@ def test_get_session(mock_session: MagicMock) -> None:
         mock_session.commit.assert_called_once()
         mock_session.rollback.assert_not_called()
 
-
 def test_get_session_rollback_on_exception(mock_session: MagicMock) -> None:
     """Test get_session context manager rolls back on exception."""
     # Arrange
@@ -58,6 +57,7 @@ def test_get_session_rollback_on_exception(mock_session: MagicMock) -> None:
         # Assert after context manager exits
         mock_session.commit.assert_not_called()
         mock_session.rollback.assert_called_once()
+
 
 
 def test_player_model() -> None:
@@ -83,12 +83,3 @@ def test_player_model() -> None:
     assert player.reset_password == player_data['reset_password']
     assert player.is_active == player_data['is_active']
 
-
-def test_seed_data() -> None:
-    """Test seed_data function."""
-    # Act
-    seed_data()
-
-    # Assert
-    # No specific assertions as seed_data currently does nothing
-    assert True

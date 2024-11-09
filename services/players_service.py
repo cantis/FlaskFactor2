@@ -10,18 +10,20 @@ from models import Player
 class PlayerNotFoundError(Exception):
     """Custom exception for player_id not found."""
 
-    def __init__(self, player_id: int, message: str ) -> None:
-        """Initialize the exception."""
-        self.player_id = player_id
-        self.message = message or f'Player with id {player_id} not found!'
+    def __init__(self, player_id: int | None = None, message: str | None = None) -> None:
+        """Initialize Player Not Found exception."""
+        if player_id is not None:
+            self.message = message or f'Player with id {player_id} not found!'
+        else:
+            self.message = message or 'Player not found!'
         super().__init__(self.message)
 
 
 class PlayerAlreadyExistsError(Exception):
     """Custom exception for player already exists."""
 
-    def __init__(self, email: str, message: str = None) -> None:
-        """Initialize the exception."""
+    def __init__(self, email: str, message: str | None = None) -> None:
+        """Initialize Player Already Exists exception."""
         self.email = email
         self.message = message or f'Player with email {email} already exists!'
         super().__init__(self.message)
@@ -73,7 +75,7 @@ def get_player_by_email(session, email: str) -> Player:
     # get the player by email
     player = session(Player).filter(Player.email == email).first()
     if not player:
-        raise PlayerNotFoundError()
+        raise PlayerNotFoundError(message=f'Player with email {email} not found!')
     return player
 
 
@@ -85,7 +87,7 @@ def get_all_players(session) -> list[Player]:  # Modify the return type annotati
 
 def update_player(session, player_id: int, update_data: dict) -> Player:
     """Update a player."""
-    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    player = session(Player).filter(Player.id == player_id).first()
     if not player:
         raise PlayerNotFoundError(player_id)
 
@@ -99,7 +101,7 @@ def update_player(session, player_id: int, update_data: dict) -> Player:
 
 def delete_player(session, player_id: int) -> None:
     """Delete a player by id."""
-    player = session.exec(select(Player).where(Player.id == player_id)).first()
+    player = session(Player).filter(Player.id == player_id).first()
     if not player:
         raise PlayerNotFoundError(player_id)
 
