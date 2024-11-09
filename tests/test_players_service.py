@@ -24,7 +24,7 @@ from services.players_service import (
 @pytest.fixture()
 def mock_session() -> Generator[MagicMock, None, None]:
     """Mock session fixture."""
-    with patch('services.players_service.get_db_session') as mock_get_db_session:
+    with patch('models.get_db_session') as mock_get_db_session:
         mock_session = MagicMock()
         mock_get_db_session.return_value.__enter__.return_value = mock_session
         yield mock_session
@@ -52,7 +52,9 @@ def test_validate_password(mock_session: MagicMock) -> None:
 
     # Act
     hashed_password = _hash_password(password)
-    mock_session.query.return_value.filter.return_value.first.return_value = Player(email=email, name=player_name, password=hashed_password)
+    mock_session.query.return_value.filter.return_value.first.return_value = Player(
+        email=email, name=player_name, password=hashed_password
+    )
 
     # Assert
     assert validate_password(mock_session, email, password)
@@ -63,7 +65,7 @@ def test_add_player(mock_session: MagicMock) -> None:
     """Test add player."""
     # Arrange
     player_data = {'name': 'Test Player', 'email': 'test@example.com', 'password': 'securepassword'}
-    mock_session.query.return_value.filter.return_value.first.return_value = None
+    mock_session.return_value.filter.return_value.first.return_value = None
 
     # Act
     new_player = add_player(mock_session, player_data)

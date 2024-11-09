@@ -38,7 +38,7 @@ def _hash_password(password: str) -> str:
 
 def validate_password(session, email: str, password: str) -> bool:
     """Validate a user's password."""
-    player = session(Player).filter(Player.email == email).first()
+    player = session.query(Player).filter(Player.email == email).first()
     if not player:
         return False
     return bcrypt.checkpw(password.encode('utf-8'), player.password.encode('utf-8'))

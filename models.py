@@ -37,11 +37,15 @@ def get_session() -> Generator:
     except DatabaseError as e:
         e.add_note('An error occurred with the database')
         logging.exception('Database error occurred %s')
+        session.rollback()
         raise
     except Exception as e:
         logging.exception('General error occurred %s')
         e.add_note('General error occurred')
+        session.rollback()
         raise
+    else:
+        session.commit()
     finally:
         if session:
             session.close()

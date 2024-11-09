@@ -30,7 +30,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 adopts = "-ra -q"
-pythonpath = [".", "src", "web"]
+pythonpath = [".", "routes", "services", "templates"]
 testpaths = ["tests"]
 
 [tool.ruff]

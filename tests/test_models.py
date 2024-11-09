@@ -4,9 +4,9 @@ from typing import Generator
 from unittest.mock import MagicMock, patch
 
 import pytest
-from sqlmodel import SQLModel
+from sqlalchemy import inspect
 
-from models import Player, create_db_and_tables, get_session
+from models import Player, create_db_and_tables, engine, get_session
 
 
 @pytest.fixture()
@@ -24,7 +24,8 @@ def test_create_db_and_tables() -> None:
     create_db_and_tables()
 
     # Assert
-    assert SQLModel.metadata.tables['player'] is not None
+    inspector = inspect(engine)
+    assert 'players' in inspector.get_table_names()
 
 
 def test_get_session(mock_session: MagicMock) -> None:
@@ -45,6 +46,7 @@ def test_get_session(mock_session: MagicMock) -> None:
         mock_session.commit.assert_called_once()
         mock_session.rollback.assert_not_called()
 
+
 def test_get_session_rollback_on_exception(mock_session: MagicMock) -> None:
     """Test get_session context manager rolls back on exception."""
     # Arrange
@@ -57,7 +59,6 @@ def test_get_session_rollback_on_exception(mock_session: MagicMock) -> None:
         # Assert after context manager exits
         mock_session.commit.assert_not_called()
         mock_session.rollback.assert_called_once()
-
 
 
 def test_player_model() -> None:
